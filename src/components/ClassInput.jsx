@@ -8,12 +8,16 @@ class ClassInput extends Component {
     this.state = {
       todos: ["Just some demo tasks", "As an example"],
       inputVal: "",
+      taskEdited: "",
+      editMode: false,
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.countTasks = this.countTasks.bind(this);
+    this.handleStartEdit = this.handleStartEdit.bind(this);
+    this.handleEndEdit = this.handleEndEdit.bind(this);
   }
 
   handleInputChange(e) {
@@ -28,6 +32,7 @@ class ClassInput extends Component {
     this.setState((state) => ({
       todos: state.todos.concat(state.inputVal),
       inputVal: "",
+      editMode: false,
     }));
   }
 
@@ -37,6 +42,34 @@ class ClassInput extends Component {
     this.setState((inputVal) => ({
       ...inputVal,
       todos: filteredArr,
+      editMode: false,
+    }));
+  }
+
+  handleStartEdit(e) {
+    const taskToEdit = e.target.parentElement.firstChild.data;
+    this.setState((state) => ({
+      ...state,
+      taskEdited: taskToEdit,
+      editMode: true,
+    }));
+  }
+
+  handleEndEdit(e) {
+    e.preventDefault();
+    /*If this looks like a lot of code, I've tried to find the index and then edit it
+    at the spot in a pure way - it didnt work well and was waaaaaaaaaaay longer than
+    this */
+    const newTask = e.target.form[0].value;
+    const oldTask = this.state.taskEdited;
+    let filteredArr = this.state.todos.filter((task) => task !== oldTask);
+    filteredArr.push(newTask);
+
+    this.setState((state) => ({
+      ...state,
+      todos: filteredArr,
+      taskEdited: "",
+      editMode: false,
     }));
   }
 
@@ -63,17 +96,79 @@ class ClassInput extends Component {
         <h4>All the tasks!</h4>
         {/* The list of all the To-Do's, displayed */}
         <ul>
-          {this.state.todos.map((todo) => (
-            <li key={todo}>
-              {todo}{" "}
-              <button onClick={this.handleDelete} htmlFor={todo}>
-                Delete
-              </button>
-            </li>
-          ))}
+          {this.state.todos.map((todo) =>
+            todo !== this.state.taskEdited ? (
+              <Task
+                key={todo}
+                todo={todo}
+                handleEdit={this.handleStartEdit}
+                handleDelete={this.handleDelete}
+              />
+            ) : (
+              <EditTask key={todo} onChange={this.handleEndEdit} todo={todo} />
+            )
+          )}
         </ul>
         <Count taskCount={this.countTasks()} />
       </section>
+    );
+  }
+}
+
+class Task extends ClassInput {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <li>
+        {this.props.todo}{" "}
+        <button onClick={this.props.handleEdit} htmlFor={this.props.todo}>
+          Edit
+        </button>
+        <button onClick={this.props.handleDelete} htmlFor={this.props.todo}>
+          Delete
+        </button>
+      </li>
+    );
+  }
+}
+
+class EditTask extends ClassInput {
+  constructor(props) {
+    super(props);
+
+    //couldn't avoid state in class
+    this.state = {
+      text: props.todo,
+    };
+    this.handleType = this.handleType.bind(this);
+  }
+
+  handleType(e) {
+    this.setState(() => ({
+      text: e.target.value,
+    }));
+  }
+
+  render() {
+    return (
+      <form>
+        <li>
+          <label htmlFor="resubmit"></label>
+          {/*Each step is like a can of worms */}
+          <input
+            type="text"
+            name="resubmit"
+            value={this.state.text}
+            onChange={this.handleType}
+          ></input>
+          <button htmlFor="resubmit" onClick={this.props.onChange}>
+            Resubmit
+          </button>
+        </li>
+      </form>
     );
   }
 }

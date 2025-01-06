@@ -55,6 +55,7 @@ ul {
 li {
   width: 100%;
   font-family: "Merriweather", serif;
+  margin-top: 0.5rem;
 }
 
 button {
@@ -64,4 +65,9 @@ button {
   border: none;
   border-radius: 0.25rem;
   font-family: "Merriweather", serif;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.597);
 }

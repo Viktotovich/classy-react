@@ -13,6 +13,7 @@ class ClassInput extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.countTasks = this.countTasks.bind(this);
   }
 
   handleInputChange(e) {
@@ -37,6 +38,10 @@ class ClassInput extends Component {
       ...inputVal,
       todos: filteredArr,
     }));
+  }
+
+  countTasks() {
+    return this.state.todos.length;
   }
 
   render() {
@@ -67,7 +72,22 @@ class ClassInput extends Component {
             </li>
           ))}
         </ul>
+        <Count taskCount={this.countTasks()} />
       </section>
+    );
+  }
+}
+
+class Count extends ClassInput {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div className="task-no-container">
+        <h3>Number of tasks: {this.props.taskCount}</h3>
+      </div>
     );
   }
 }

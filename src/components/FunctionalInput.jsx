@@ -52,6 +52,9 @@ const FunctionalInput = ({ name }) => {
           </li>
         ))}
       </ul>
+      <div className="task-no-container">
+        <h3>Number of tasks: {todos.length}</h3>
+      </div>
     </section>
   );
 };
